@@ -8,4 +8,9 @@
   <h1><%= @result[:score].round %> points</h1>
   <br>
   <h1><%= @result[:message] %></h1>
+  <br>
+  <h1><%= link_to "Start again", game_path %></h1>
+  <br>
+  <h2>Number of parties played: <%= @parties_played%></h2>
+  <p>Average score: <%=  @average_score %></p>
 </div>

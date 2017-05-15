@@ -1,11 +1,13 @@
 class PagesController < ApplicationController
   def game
-    @grid = generate_grid(9).join
+    @grid = generate_grid(30).join
     @start_time = Time.now
-  end
-
-  def generate_grid(grid_size)
-  Array.new(grid_size) { ('A'..'Z').to_a[rand(26)] }
+    # new_session
+    if session[:party] != nil
+      session[:party] += 1
+    else
+      session[:party] = 1
+    end
   end
 
   def score
@@ -14,8 +16,21 @@ class PagesController < ApplicationController
     @start_time = Time.parse(params[:start_time])
     @grid = params[:grid]
     @result = run_game(@guess, @grid, @start_time, @end_time)
+    if session[:score] != nil
+      session[:score] += @result[:score]
+    else
+      session[:score] = @result[:score]
+    end
+    @total_score = session[:score]
+    @parties_played = session[:party]
+    @average_score = @total_score / @parties_played
   end
 
+  private
+
+  def generate_grid(grid_size)
+    Array.new(grid_size) { ('A'..'Z').to_a[rand(26)] }
+  end
 
   def included?(guess, grid)
     guess.split.all? { |letter| guess.count(letter) <= grid.count(letter) }
@@ -62,5 +77,10 @@ class PagesController < ApplicationController
     else
       return nil
     end
+  end
+
+  def new_session
+    session[:party] = 0
+    session[:score] = 0
   end
 end
